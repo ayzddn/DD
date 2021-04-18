@@ -1,8 +1,8 @@
 /*
-东东萌宠 更新地址： https://gitee.com/lxk0301/jd_scripts/raw/master/jd_pet.js
-更新时间：2021-04-9
+东东萌宠 更新地址： https://jdsharedresourcescdn.azureedge.net/jdresource/jd_pet.js
+更新时间：2021-02-27
 活动入口：京东APP我的-更多工具-东东萌宠
-已支持IOS多京东账号,Node.js支持N个京东账号
+已支持IOS双京东账号,Node.js支持N个京东账号
 脚本兼容: QuantumultX, Surge, Loon, JSBox, Node.js
 
 互助码shareCode请先手动运行脚本查看打印可看到
@@ -11,17 +11,17 @@
 =================================Quantumultx=========================
 [task_local]
 #东东萌宠
-15 6-18/6 * * * https://gitee.com/lxk0301/jd_scripts/raw/master/jd_pet.js, tag=东东萌宠, img-url=https://raw.githubusercontent.com/58xinian/icon/master/jdmc.png, enabled=true
+15 6-18/6 * * * https://jdsharedresourcescdn.azureedge.net/jdresource/jd_pet.js, tag=东东萌宠, img-url=https://raw.githubusercontent.com/58xinian/icon/master/jdmc.png, enabled=true
 
 =================================Loon===================================
 [Script]
-cron "15 6-18/6 * * *" script-path=https://gitee.com/lxk0301/jd_scripts/raw/master/jd_pet.js,tag=东东萌宠
+cron "15 6-18/6 * * *" script-path=https://jdsharedresourcescdn.azureedge.net/jdresource/jd_pet.js,tag=东东萌宠
 
 ===================================Surge================================
-东东萌宠 = type=cron,cronexp="15 6-18/6 * * *",wake-system=1,timeout=3600,script-path=https://gitee.com/lxk0301/jd_scripts/raw/master/jd_pet.js
+东东萌宠 = type=cron,cronexp="15 6-18/6 * * *",wake-system=1,timeout=3600,script-path=https://jdsharedresourcescdn.azureedge.net/jdresource/jd_pet.js
 
 ====================================小火箭=============================
-东东萌宠 = type=cron,script-path=https://gitee.com/lxk0301/jd_scripts/raw/master/jd_pet.js, cronexpr="15 6-18/6 * * *", timeout=3600, enable=true
+东东萌宠 = type=cron,script-path=https://jdsharedresourcescdn.azureedge.net/jdresource/jd_pet.js, cronexpr="15 6-18/6 * * *", timeout=3600, enable=true
 
 */
 const $ = new Env('东东萌宠');
@@ -29,17 +29,20 @@ let cookiesArr = [], cookie = '', jdPetShareArr = [], isBox = false, notify, new
 //助力好友分享码(最多5个,否则后面的助力失败),原因:京东农场每人每天只有四次助力机会
 //此此内容是IOS用户下载脚本到本地使用，填写互助码的地方，同一京东账号的好友互助码请使用@符号隔开。
 //下面给出两个账号的填写示例（iOS只支持2个京东账号）
-let shareCodes = [ // IOS本地脚本用户这个列表填入你要助力的好友的shareCode
-   //账号一的好友shareCode,不同好友的shareCode中间用@符号隔开
-  'MTAxODc2NTEzOTAwMDAwMDAxMzYyMDk5Mw==@MTAxODc2NTEzMDAwMDAwMDAxMTY3OTk2OQ==@MTE1NDQ5OTIwMDAwMDAwMzkxODgwNDc=@MTE1NDUyMjEwMDAwMDAwMzkyNjE2OTc=@MTE1NDQ5OTUwMDAwMDAwMzkxODgwNTU=@MTE1NDQ5OTUwMDAwMDAwNDI5Nzk4MDU=@MTE1NDQ5OTUwMDAwMDAwMzkxODgwNTU=@MTE1NDUwMTI0MDAwMDAwMDQ1MzE5MTI5@MTAxODc2NTEzOTAwMDAwMDAxMzYyMDk5Mw==@MTAxODc2NTEzMDAwMDAwMDAxMTY3OTk2OQ==@MTAxODc2NTEzNTAwMDAwMDAzMDgyNzc3Nw==',
-  //账号二的好友shareCode,不同好友的shareCode中间用@符号隔开
-  'MTAxODc2NTEzOTAwMDAwMDAxMzYyMDk5Mw==@MTAxODc2NTEzMDAwMDAwMDAxMTY3OTk2OQ==@MTE1NDQ5OTIwMDAwMDAwMzkxODgwNDc=@MTE1NDUyMjEwMDAwMDAwMzkyNjE2OTc=@MTE1NDQ5OTUwMDAwMDAwMzkxODgwNTU=@MTE1NDQ5OTUwMDAwMDAwNDI5Nzk4MDU=@MTE1NDQ5OTUwMDAwMDAwMzkxODgwNTU=@MTE1NDUwMTI0MDAwMDAwMDQ1MzE5MTI5@MTAxODc2NTEzOTAwMDAwMDAxMzYyMDk5Mw==@MTAxODc2NTEzMDAwMDAwMDAxMTY3OTk2OQ==@MTAxODc2NTEzNTAwMDAwMDAzMDgyNzc3Nw==',
+let shareCodes = [ // IOS本地脚本用户这个列表填入你要助力的好友的shareCode	
+   //账号一的好友shareCode,不同好友的shareCode中间用@符号隔开	
+  'MTE1NDAxNzcwMDAwMDAwMzkxODEzOTU=@MTEzMzI0OTE0NTAwMDAwMDA0NDIzNDM5OQ==@MTE1NDAxNzYwMDAwMDAwNDA1MDI4MTk=@MTE1NDAxNzYwMDAwMDAwMzg4MTk0NzM=@MTAxODEyOTI4MDAwMDAwMDM5OTIwNDEx@MTE1NDUyMjEwMDAwMDAwNDIzNzQwMzc=@MTE1NDQ5OTIwMDAwMDAwNDM4NzI1OTk=',	
+  //账号二的好友shareCode,不同好友的shareCode中间用@符号隔开	
+  'MTE1NDAxNzcwMDAwMDAwMzkxODEzOTU=@MTEzMzI0OTE0NTAwMDAwMDA0NDIzNDM5OQ==@MTE1NDAxNzYwMDAwMDAwNDA1MDI4MTk=@MTE1NDAxNzYwMDAwMDAwMzg4MTk0NzM=@MTAxODEyOTI4MDAwMDAwMDM5OTIwNDEx@MTE1NDUyMjEwMDAwMDAwNDIzNzQwMzc=@MTE1NDQ5OTIwMDAwMDAwNDM4NzI1OTk=',	
+  'MTE1NDAxNzcwMDAwMDAwMzkxODEzOTU=@MTEzMzI0OTE0NTAwMDAwMDA0NDIzNDM5OQ==@MTE1NDAxNzYwMDAwMDAwNDA1MDI4MTk=@MTE1NDAxNzYwMDAwMDAwMzg4MTk0NzM=@MTAxODEyOTI4MDAwMDAwMDM5OTIwNDEx@MTE1NDUyMjEwMDAwMDAwNDIzNzQwMzc=@MTE1NDQ5OTIwMDAwMDAwNDM4NzI1OTk=',	
+  'MTE1NDAxNzcwMDAwMDAwMzkxODEzOTU=@MTEzMzI0OTE0NTAwMDAwMDA0NDIzNDM5OQ==@MTE1NDAxNzYwMDAwMDAwNDA1MDI4MTk=@MTE1NDAxNzYwMDAwMDAwMzg4MTk0NzM=@MTAxODEyOTI4MDAwMDAwMDM5OTIwNDEx@MTE1NDUyMjEwMDAwMDAwNDIzNzQwMzc=@MTE1NDQ5OTIwMDAwMDAwNDM4NzI1OTk=',	
+  'MTE1NDAxNzcwMDAwMDAwMzkxODEzOTU=@MTEzMzI0OTE0NTAwMDAwMDA0NDIzNDM5OQ==@MTE1NDAxNzYwMDAwMDAwNDA1MDI4MTk=@MTE1NDAxNzYwMDAwMDAwMzg4MTk0NzM=@MTAxODEyOTI4MDAwMDAwMDM5OTIwNDEx@MTE1NDUyMjEwMDAwMDAwNDIzNzQwMzc=@MTE1NDQ5OTIwMDAwMDAwNDM4NzI1OTk=',	
 ]
 let message = '', subTitle = '', option = {};
-let jdNotify = true;//是否关闭通知，false打开通知推送，true关闭通知推送
+let jdNotify = false;//是否关闭通知，false打开通知推送，true关闭通知推送
 const JD_API_HOST = 'https://api.m.jd.com/client.action';
 let goodsUrl = '', taskInfoKey = [];
-let randomCount = 0 ;
+let randomCount = $.isNode() ? 0 : 5;
 !(async () => {
   await requireConfig();
   if (!cookiesArr[0]) {
@@ -49,7 +52,7 @@ let randomCount = 0 ;
   for (let i = 0; i < cookiesArr.length; i++) {
     if (cookiesArr[i]) {
       cookie = cookiesArr[i];
-      $.UserName = decodeURIComponent(cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1])
+      $.UserName = decodeURIComponent(cookie.match(/pt_pin=(.+?);/) && cookie.match(/pt_pin=(.+?);/)[1])
       $.index = i + 1;
       $.isLogin = true;
       $.nickName = '';
@@ -141,9 +144,6 @@ async function jdPet() {
     }
   } catch (e) {
     $.logErr(e)
-    const errMsg = `京东账号${$.index} ${$.nickName || $.UserName}\n任务执行异常，请检查执行日志 ‼️‼️`;
-    if ($.isNode()) await notify.sendNotify(`${$.name}`, errMsg);
-    $.msg($.name, '', `${errMsg}`)
   }
 }
 // 收取所有好感度
@@ -475,10 +475,10 @@ function readShareCode() {
 }
 function shareCodesFormat() {
   return new Promise(async resolve => {
-    // console.log(`第${$.index}个京东账号的助力码:::${$.shareCodesArr[$.index - 1]}`)
+    // console.log(`第${$.index}个京东账号的助力码:::${jdPetShareArr[$.index - 1]}`)
     newShareCodes = [];
-    if ($.shareCodesArr[$.index - 1]) {
-      newShareCodes = $.shareCodesArr[$.index - 1].split('@');
+    if (jdPetShareArr[$.index - 1]) {
+      newShareCodes = jdPetShareArr[$.index - 1].split('@');
     } else {
       console.log(`由于您第${$.index}个京东账号未提供shareCode,将采纳本脚本自带的助力码\n`)
       const tempIndex = $.index > shareCodes.length ? (shareCodes.length - 1) : ($.index - 1);
@@ -513,20 +513,46 @@ function requireConfig() {
       cookiesArr = [$.getdata('CookieJD'), $.getdata('CookieJD2'), ...jsonParse($.getdata('CookiesJD') || "[]").map(item => item.cookie)].filter(item => !!item);
     }
     console.log(`共${cookiesArr.length}个京东账号\n`)
-    $.shareCodesArr = [];
     if ($.isNode()) {
       Object.keys(jdPetShareCodes).forEach((item) => {
         if (jdPetShareCodes[item]) {
-          $.shareCodesArr.push(jdPetShareCodes[item])
+          jdPetShareArr.push(jdPetShareCodes[item])
         }
       })
     } else {
-      if ($.getdata('jd_pet_inviter')) $.shareCodesArr = $.getdata('jd_pet_inviter').split('\n').filter(item => !!item);
-      console.log(`\nBoxJs设置的${$.name}好友邀请码:${$.getdata('jd_pet_inviter') ? $.getdata('jd_pet_inviter') : '暂无'}\n`);
+      const boxShareCodeArr = ['jd_pet1', 'jd_pet2', 'jd_pet3', 'jd_pet4', 'jd_pet5'];
+      const boxShareCodeArr2 = ['jd2_pet1', 'jd2_pet2', 'jd2_pet3', 'jd2_pet4', 'jd2_pet5'];
+      const isBox1 = boxShareCodeArr.some((item) => {
+        const boxShareCode = $.getdata(item);
+        return (boxShareCode !== undefined && boxShareCode !== null && boxShareCode !== '');
+      });
+      const isBox2 = boxShareCodeArr2.some((item) => {
+        const boxShareCode = $.getdata(item);
+        return (boxShareCode !== undefined && boxShareCode !== null && boxShareCode !== '');
+      });
+      isBox = isBox1 ? isBox1 : isBox2;
+      if (isBox1) {
+        let temp = [];
+        for (const item of boxShareCodeArr) {
+          if ($.getdata(item)) {
+            temp.push($.getdata(item))
+          }
+        }
+        jdPetShareArr.push(temp.join('@'));
+      }
+      if (isBox2) {
+        let temp = [];
+        for (const item of boxShareCodeArr2) {
+          if ($.getdata(item)) {
+            temp.push($.getdata(item))
+          }
+        }
+        jdPetShareArr.push(temp.join('@'));
+      }
     }
-    // console.log(`$.shareCodesArr::${JSON.stringify($.shareCodesArr)}`)
-    // console.log(`jdPetShareArr账号长度::${$.shareCodesArr.length}`)
-    console.log(`您提供了${$.shareCodesArr.length}个账号的东东萌宠助力码\n`);
+    // console.log(`jdPetShareArr::${JSON.stringify(jdPetShareArr)}`)
+    // console.log(`jdPetShareArr账号长度::${jdPetShareArr.length}`)
+    console.log(`您提供了${jdPetShareArr.length}个账号的东东萌宠助力码\n`);
     resolve()
   })
 }
@@ -542,7 +568,7 @@ function TotalBean() {
         "Connection": "keep-alive",
         "Cookie": cookie,
         "Referer": "https://wqs.jd.com/my/jingdou/my.shtml?sceneval=2",
-        "User-Agent": $.isNode() ? (process.env.JD_USER_AGENT ? process.env.JD_USER_AGENT : (require('./USER_AGENTS').USER_AGENT)) : ($.getdata('JDUA') ? $.getdata('JDUA') : "jdapp;iPhone;9.4.4;14.3;network/4g;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1")
+        "User-Agent": $.isNode() ? (process.env.JD_USER_AGENT ? process.env.JD_USER_AGENT : (require('./USER_AGENTS').USER_AGENT)) : ($.getdata('JDUA') ? $.getdata('JDUA') : "jdapp;iPhone;9.2.2;14.2;%E4%BA%AC%E4%B8%9C/9.2.2 CFNetwork/1206 Darwin/20.1.0")
       }
     }
     $.post(options, (err, resp, data) => {
@@ -600,7 +626,7 @@ async function request(function_id, body = {}) {
 //     url: `${JD_API_HOST}?functionId=${function_id}&appid=wh5&loginWQBiz=pet-town&body=${escape(JSON.stringify(body))}`,
 //     headers: {
 //       Cookie: cookie,
-//       UserAgent: $.isNode() ? (process.env.JD_USER_AGENT ? process.env.JD_USER_AGENT : (require('./USER_AGENTS').USER_AGENT)) : ($.getdata('JDUA') ? $.getdata('JDUA') : "jdapp;iPhone;9.4.4;14.3;network/4g;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1"),
+//       UserAgent: $.isNode() ? (process.env.JD_USER_AGENT ? process.env.JD_USER_AGENT : (require('./USER_AGENTS').USER_AGENT)) : ($.getdata('JDUA') ? $.getdata('JDUA') : "jdapp;iPhone;9.2.2;14.2;%E4%BA%AC%E4%B8%9C/9.2.2 CFNetwork/1206 Darwin/20.1.0"),
 //     }
 //   };
 // }
@@ -612,7 +638,7 @@ function taskUrl(function_id, body = {}) {
     body: `body=${escape(JSON.stringify(body))}&appid=wh5&loginWQBiz=pet-town&clientVersion=9.0.4`,
     headers: {
       'Cookie': cookie,
-      'User-Agent': $.isNode() ? (process.env.JD_USER_AGENT ? process.env.JD_USER_AGENT : (require('./USER_AGENTS').USER_AGENT)) : ($.getdata('JDUA') ? $.getdata('JDUA') : "jdapp;iPhone;9.4.4;14.3;network/4g;Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1"),
+      'User-Agent': $.isNode() ? (process.env.JD_USER_AGENT ? process.env.JD_USER_AGENT : (require('./USER_AGENTS').USER_AGENT)) : ($.getdata('JDUA') ? $.getdata('JDUA') : "jdapp;iPhone;9.2.2;14.2;%E4%BA%AC%E4%B8%9C/9.2.2 CFNetwork/1206 Darwin/20.1.0"),
       'Host': 'api.m.jd.com',
       'Content-Type': 'application/x-www-form-urlencoded',
     }

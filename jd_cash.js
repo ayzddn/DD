@@ -7,17 +7,17 @@
 ============Quantumultx===============
 [task_local]
 #签到领现金
-2 0-23/4 * * * https://gitee.com/lxk0301/jd_scripts/raw/master/jd_cash.js, tag=签到领现金, img-url=https://raw.githubusercontent.com/Orz-3/mini/master/Color/jd.png, enabled=true
+2 0-23/4 * * * https://jdsharedresourcescdn.azureedge.net/jdresource/jd_cash.js, tag=签到领现金, img-url=https://raw.githubusercontent.com/Orz-3/mini/master/Color/jd.png, enabled=true
 
 ================Loon==============
 [Script]
-cron "2 0-23/4 * * *" script-path=https://gitee.com/lxk0301/jd_scripts/raw/master/jd_cash.js,tag=签到领现金
+cron "2 0-23/4 * * *" script-path=https://jdsharedresourcescdn.azureedge.net/jdresource/jd_cash.js,tag=签到领现金
 
 ===============Surge=================
-签到领现金 = type=cron,cronexp="2 0-23/4 * * *",wake-system=1,timeout=3600,script-path=https://gitee.com/lxk0301/jd_scripts/raw/master/jd_cash.js
+签到领现金 = type=cron,cronexp="2 0-23/4 * * *",wake-system=1,timeout=3600,script-path=https://jdsharedresourcescdn.azureedge.net/jdresource/jd_cash.js
 
 ============小火箭=========
-签到领现金 = type=cron,script-path=https://gitee.com/lxk0301/jd_scripts/raw/master/jd_cash.js, cronexpr="2 0-23/4 * * *", timeout=3600, enable=true
+签到领现金 = type=cron,script-path=https://jdsharedresourcescdn.azureedge.net/jdresource/jd_cash.js, cronexpr="2 0-23/4 * * *", timeout=3600, enable=true
  */
 const $ = new Env('签到领现金');
 const notify = $.isNode() ? require('./sendNotify') : '';
@@ -27,10 +27,12 @@ let jdNotify = true;//是否关闭通知，false打开通知推送，true关闭�
 //IOS等用户直接用NobyDa的jd cookie
 let cookiesArr = [], cookie = '', message;
 let helpAuthor = true;
-const randomCount = 0 ;
-const inviteCodes = [
- 'd15oML3rO6VJ8WzVww@eU9Yar6xYKpyp2jVyXcSgg@eU9Yae_gM6gg8zuDzXcV1w@eU9YGaTyGZVfmCadrCt0@eU9YM5DDO6BctA6CrQhA@eU9YJaroGIF0iRyyogFV@eU9YJLLlEZ1XhjyplBVE@ZF5rNa_qP7V3r27d@eU9YaO6wb_wuoj_WzXQQhA@eU9YK63UA7xytyS3iyFK@eU9YLY7NGbtdoCuzng1m@eU9YJLLlEZ1XhjyplBVE@eU9YKpHTI49YpjeQvABS@eU9YE5fXDJpnjT-uqSJ5@eU9YPZvXM61cjAqfnARR@a0JmM7brOKtuqAHVyXMb', 
- 'd15oML3rO6VJ8WzVww@eU9Yar6xYKpyp2jVyXcSgg@eU9Yae_gM6gg8zuDzXcV1w@eU9YGaTyGZVfmCadrCt0@eU9YM5DDO6BctA6CrQhA@eU9YJaroGIF0iRyyogFV@eU9YJLLlEZ1XhjyplBVE@ZF5rNa_qP7V3r27d@eU9YaO6wb_wuoj_WzXQQhA@eU9YK63UA7xytyS3iyFK@eU9YLY7NGbtdoCuzng1m@eU9YJLLlEZ1XhjyplBVE@eU9YKpHTI49YpjeQvABS@eU9YE5fXDJpnjT-uqSJ5@eU9YPZvXM61cjAqfnARR@a0JmM7brOKtuqAHVyXMb',
+const randomCount = $.isNode() ? 0 : 5;		
+const inviteCodes = [	
+  'eU9YLLXMAYRgmReknwxG@eU9YCbfbHp5HkSepqRZx@eU9YCZvgLolCuT-OuCBu@cENiLq77Z_0n9w@eU9YK57pML9vly-8uSFB@JxMya-21b_8n7GvTz3cQ3w',
+  'eU9YLLXMAYRgmReknwxG@eU9YCbfbHp5HkSepqRZx@eU9YCZvgLolCuT-OuCBu@cENiLq77Z_0n9w@eU9YK57pML9vly-8uSFB@JxMya-21b_8n7GvTz3cQ3w',
+  'eU9YLLXMAYRgmReknwxG@eU9YCbfbHp5HkSepqRZx@eU9YCZvgLolCuT-OuCBu@cENiLq77Z_0n9w@eU9YK57pML9vly-8uSFB@JxMya-21b_8n7GvTz3cQ3w',
+  'eU9YLLXMAYRgmReknwxG@eU9YCbfbHp5HkSepqRZx@eU9YCZvgLolCuT-OuCBu@cENiLq77Z_0n9w@eU9YK57pML9vly-8uSFB@JxMya-21b_8n7GvTz3cQ3w'	
 ]
 if ($.isNode()) {
   Object.keys(jdCookieNode).forEach((item) => {
@@ -49,11 +51,10 @@ let allMessage = '';
   }
   await requireConfig()
   await getAuthorShareCode();
-  await getAuthorShareCode2();
   for (let i = 0; i < cookiesArr.length; i++) {
     if (cookiesArr[i]) {
       cookie = cookiesArr[i];
-      $.UserName = decodeURIComponent(cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1])
+      $.UserName = decodeURIComponent(cookie.match(/pt_pin=(.+?);/) && cookie.match(/pt_pin=(.+?);/)[1])
       $.index = i + 1;
       $.isLogin = true;
       $.nickName = '';
@@ -72,7 +73,7 @@ let allMessage = '';
     }
   }
   if (allMessage) {
-   // if ($.isNode() && (process.env.CASH_NOTIFY_CONTROL ? process.env.CASH_NOTIFY_CONTROL === 'false' : !!1)) await notify.sendNotify($.name, allMessage);
+    if ($.isNode() && (process.env.CASH_NOTIFY_CONTROL ? process.env.CASH_NOTIFY_CONTROL === 'false' : !!1)) await notify.sendNotify($.name, allMessage);
     $.msg($.name, '', allMessage);
   }
 })()
@@ -380,28 +381,6 @@ function getAuthorShareCode(url = "https://gitee.com/shylocks/updateTeam/raw/mai
         if (err) {
         } else {
           $.authorCode = JSON.parse(data)
-        }
-      } catch (e) {
-        $.logErr(e, resp)
-      } finally {
-        resolve();
-      }
-    })
-  })
-}
-function getAuthorShareCode2(url = "https://gitee.com/lxk0301/updateTeam/raw/master/shareCodes/jd_updateCash.json") {
-  return new Promise(resolve => {
-    $.get({url, headers:{
-        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1 Edg/87.0.4280.88"
-      }}, async (err, resp, data) => {
-      $.authorCode2 = [];
-      try {
-        if (err) {
-        } else {
-          $.authorCode2 = JSON.parse(data)
-          if ($.authorCode2 && $.authorCode2.length) {
-            $.authorCode.push(...$.authorCode2);
-          }
         }
       } catch (e) {
         $.logErr(e, resp)

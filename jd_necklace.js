@@ -1,9 +1,9 @@
-/*
- * @Author: lxk0301 https://gitee.com/lxk0301
- * @Date: 2020-11-20 11:42:03 
- * @Last Modified by: lxk0301
- * @Last Modified time: 2021-3-25 12:27:14
- */
+/*	
+ * @Author: lxk0301 https://gitee.com/lxk0301	
+ * @Date: 2020-11-20 11:42:03 	
+ * @Last Modified by: lxk0301	
+ * @Last Modified time: 2021-3-16 12:27:14	
+ */	
 /*
 点点券，可以兑换无门槛红包（1元，5元，10元，100元，部分红包需抢购）
 活动入口：京东APP-领券中心/券后9.9-领点点券
@@ -13,17 +13,17 @@
 ===============Quantumultx===============
 [task_local]
 #点点券
-10 0,20 * * * https://gitee.com/lxk0301/jd_scripts/raw/master/jd_necklace.js, tag=点点券, img-url=https://raw.githubusercontent.com/Orz-3/mini/master/Color/jd.png, enabled=true
+10 0,20 * * * https://jdsharedresourcescdn.azureedge.net/jdresource/jd_necklace.js, tag=点点券, img-url=https://raw.githubusercontent.com/Orz-3/mini/master/Color/jd.png, enabled=true
 
 ================Loon==============
 [Script]
-cron "10 0,20 * * *" script-path=https://gitee.com/lxk0301/jd_scripts/raw/master/jd_necklace.js,tag=点点券
+cron "10 0,20 * * *" script-path=https://jdsharedresourcescdn.azureedge.net/jdresource/jd_necklace.js,tag=点点券
 
 ===============Surge=================
-点点券 = type=cron,cronexp="10 0,20 * * *",wake-system=1,timeout=3600,script-path=https://gitee.com/lxk0301/jd_scripts/raw/master/jd_necklace.js
+点点券 = type=cron,cronexp="10 0,20 * * *",wake-system=1,timeout=3600,script-path=https://jdsharedresourcescdn.azureedge.net/jdresource/jd_necklace.js
 
 ============小火箭=========
-点点券 = type=cron,script-path=https://gitee.com/lxk0301/jd_scripts/raw/master/jd_necklace.js, cronexpr="10 0,20 * * *", timeout=3600, enable=true
+点点券 = type=cron,script-path=https://jdsharedresourcescdn.azureedge.net/jdresource/jd_necklace.js, cronexpr="10 0,20 * * *", timeout=3600, enable=true
  */
 const $ = new Env('点点券');
 let allMessage = ``;
@@ -53,7 +53,7 @@ const JD_API_HOST = 'https://api.m.jd.com/api';
   for (let i = 0; i < cookiesArr.length; i++) {
     if (cookiesArr[i]) {
       cookie = cookiesArr[i];
-      $.UserName = decodeURIComponent(cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1])
+      $.UserName = decodeURIComponent(cookie.match(/pt_pin=(.+?);/) && cookie.match(/pt_pin=(.+?);/)[1])
       $.index = i + 1;
       $.isLogin = true;
       $.nickName = '';
@@ -89,7 +89,7 @@ async function jd_necklace() {
   await sign();
   await necklace_homePage();
   // await necklace_exchangeGift($.totalScore);//自动兑换多少钱的无门槛红包，1000代表1元，默认兑换全部点点券
-  //await showMsg();
+  await showMsg();
 }
 function showMsg() {
   return new Promise(async resolve => {
@@ -137,9 +137,10 @@ async function sign() {
 }
 async function reportTask(item = {}) {
   //普通任务
-  if (item['taskType'] === 2) await necklace_startTask(item.id, 'necklace_reportTask');
-  //逛很多商品店铺等等任务
-  if (item['taskType'] === 6 || item['taskType'] === 8 || item['taskType'] === 5 || item['taskType'] === 9) {
+  if (item['taskType'] !== 3 && item['taskType'] !== 4 && item['taskType'] !== 6) {
+    await necklace_startTask(item.id, 'necklace_reportTask');
+  }
+  if (item['taskType'] === 6) {
     //浏览精选活动任务
     await necklace_getTask(item.id);
     $.taskItems = $.taskItems.filter(value => !!value && value['status'] === 0);

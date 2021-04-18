@@ -18,21 +18,21 @@ iOS同时支持使用 NobyDa 与 domplin 脚本的京东 cookie
 ============Quantumultx===============
 [task_local]
 #京东保价
-0 2 * * * https://gitee.com/lxk0301/jd_scripts/raw/master/jd_price.js, tag=京东保价, img-url=https://raw.githubusercontent.com/Orz-3/task/master/jd.png, enabled=true
+0 2 * * * https://jdsharedresourcescdn.azureedge.net/jdresource/jd_price.js, tag=京东保价, img-url=https://raw.githubusercontent.com/Orz-3/task/master/jd.png, enabled=true
 
 ================Loon==============
 [Script]
-cron "0 2 * * *" script-path=https://gitee.com/lxk0301/jd_scripts/raw/master/jd_price.js,tag=京东保价
+cron "0 2 * * *" script-path=https://jdsharedresourcescdn.azureedge.net/jdresource/jd_price.js,tag=京东保价
 
 ===============Surge=================
-京东保价 = type=cron,cronexp="0 2 * * *",wake-system=1,timeout=3600,script-path=https://gitee.com/lxk0301/jd_scripts/raw/master/jd_price.js
+京东保价 = type=cron,cronexp="0 2 * * *",wake-system=1,timeout=3600,script-path=https://jdsharedresourcescdn.azureedge.net/jdresource/jd_price.js
 
 ============小火箭=========
-京东保价 = type=cron,script-path=https://gitee.com/lxk0301/jd_scripts/raw/master/jd_price.js, cronexpr="0 2 * * *", timeout=3600, enable=true
+京东保价 = type=cron,script-path=https://jdsharedresourcescdn.azureedge.net/jdresource/jd_price.js, cronexpr="0 2 * * *", timeout=3600, enable=true
  */
 
 const $ = new Env('京东保价');
-const notify = $.isNode() ? require('./sendNotify') : '';
+
 const selfDomain = 'https://msitepp-fm.jd.com/';
 const unifiedGatewayName = 'https://api.m.jd.com/';
 const jdCookieNode = $.isNode() ? require('./jdCookie.js') : '';
@@ -86,46 +86,50 @@ if ($.isNode()) {
           $.nickName || $.UserName
         }********\n`
       );
-      $.hasNext = true;
-      $.refundtotalamount = 0;
-      $.orderList = new Array();
-      $.applyMap = {};
-      // TODO
-      $.token = '';
-      $.feSt = 'f';
-      console.log(`💥 获得首页面，解析超参数`);
-      await getHyperParams();
-      // console.log($.HyperParam)
-      console.log(`----------`);
-      console.log(`🧾 获取所有价格保护列表，排除附件商品`);
-      for (let page = 1; $.hasNext; page++) {
-        await getApplyData(page);
-      }
-      console.log(`----------`);
-      console.log(`🗑 删除不符合订单`);
-      console.log(`----------`);
-      let taskList = [];
-      for (let order of $.orderList) {
-        taskList.push(historyResultQuery(order));
-      }
-      await Promise.all(taskList);
-      console.log(`----------`);
-      console.log(`📊 ${$.orderList.length}个商品即将申请价格保护！`);
-      console.log(`----------`);
-      for (let order of $.orderList) {
-        await skuApply(order);
-        await $.wait(300);
-      }
-      console.log(`----------`);
-      console.log(`⏳ 等待申请价格保护结果...`);
-      console.log(`----------`);
-      for (let i = 1; i <= 30 && Object.keys($.applyMap).length > 0; i++) {
-        await $.wait(1000);
-        if (i % 5 == 0) {
-          await getApplyResult();
+      try {
+        $.hasNext = true;
+        $.refundtotalamount = 0;
+        $.orderList = new Array();
+        $.applyMap = {};
+        // TODO
+        $.token = '';
+        $.feSt = 'f';
+        console.log(`💥 获得首页面，解析超参数`);
+        await getHyperParams();
+        // console.log($.HyperParam)
+        console.log(`----------`);
+        console.log(`🧾 获取所有价格保护列表，排除附件商品`);
+        for (let page = 1; $.hasNext; page++) {
+          await getApplyData(page);
         }
+        console.log(`----------`);
+        console.log(`🗑 删除不符合订单`);
+        console.log(`----------`);
+        let taskList = [];
+        for (let order of $.orderList) {
+          taskList.push(historyResultQuery(order));
+        }
+        await Promise.all(taskList);
+        console.log(`----------`);
+        console.log(`📊 ${$.orderList.length}个商品即将申请价格保护！`);
+        console.log(`----------`);
+        for (let order of $.orderList) {
+          await skuApply(order);
+          await $.wait(300);
+        }
+        console.log(`----------`);
+        console.log(`⏳ 等待申请价格保护结果...`);
+        console.log(`----------`);
+        for (let i = 1; i <= 30 && Object.keys($.applyMap).length > 0; i++) {
+          await $.wait(1000);
+          if (i % 5 == 0) {
+            await getApplyResult();
+          }
+        }
+        showMsg();
+      } catch (e) {
+        $.logErr(e)
       }
-      showMsg();
     }
   }
 })()
@@ -484,7 +488,6 @@ function showMsg() {
           'https://msitepp-fm.jd.com/rest/priceprophone/priceProPhoneMenu',
       }
     );
-    notify.sendNotify(`${$.name} - 账号${$.index} - ${$.nickName}`, `京东账号${$.index} ${$.nickName || $.UserName}\n🎉 本次价格保护金额：${$.refundtotalamount}💰\n价保记录：https://msitepp-fm.jd.com/rest/priceprophone/priceProPhoneMenu` )
   }
 }
 
@@ -516,7 +519,11 @@ function totalBean() {
               return;
             }
             $.isLogin = true;
-            $.nickName = data['base'].nickname;
+            if (data['retcode'] === 0) {
+              $.nickName = (data['base'] && data['base'].nickname) || $.UserName;
+            } else {
+              $.nickName = $.UserName
+            }
           } else {
             console.log(`京东服务器返回空数据`);
           }

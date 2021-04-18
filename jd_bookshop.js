@@ -6,17 +6,17 @@
 ============Quantumultx===============
 [task_local]
 #口袋书店
-1 8,12,18 * * * https://gitee.com/lxk0301/jd_scripts/raw/master/jd_bookshop.js, tag=口袋书店, img-url=https://raw.githubusercontent.com/Orz-3/mini/master/Color/jd.png, enabled=true
+1 8,12,18 * * * https://jdsharedresourcescdn.azureedge.net/jdresource/jd_bookshop.js, tag=口袋书店, img-url=https://raw.githubusercontent.com/Orz-3/mini/master/Color/jd.png, enabled=true
 
 ================Loon==============
 [Script]
-cron "1 8,12,18 * * *" script-path=https://gitee.com/lxk0301/jd_scripts/raw/master/jd_bookshop.js,tag=口袋书店
+cron "1 8,12,18 * * *" script-path=https://jdsharedresourcescdn.azureedge.net/jdresource/jd_bookshop.js,tag=口袋书店
 
 ===============Surge=================
-口袋书店 = type=cron,cronexp="1 8,12,18 * * *",wake-system=1,timeout=3600,script-path=https://gitee.com/lxk0301/jd_scripts/raw/master/jd_bookshop.js
+口袋书店 = type=cron,cronexp="1 8,12,18 * * *",wake-system=1,timeout=3600,script-path=https://jdsharedresourcescdn.azureedge.net/jdresource/jd_bookshop.js
 
 ============小火箭=========
-口袋书店 = type=cron,script-path=https://gitee.com/lxk0301/jd_scripts/raw/master/jd_bookshop.js, cronexpr="1 8,12,18* * *", timeout=3600, enable=true
+口袋书店 = type=cron,script-path=https://jdsharedresourcescdn.azureedge.net/jdresource/jd_bookshop.js, cronexpr="1 8,12,18* * *", timeout=3600, enable=true
  */
 const $ = new Env('口袋书店');
 const notify = $.isNode() ? require('./sendNotify') : '';
@@ -24,14 +24,14 @@ const jdCookieNode = $.isNode() ? require('./jdCookie.js') : '';
 //Node.js用户请在jdCookie.js处填写京东ck;
 //IOS等用户直接用NobyDa的jd cookie
 let cookiesArr = [], cookie = '', message;
-const ACT_ID = 'dz2010100034444201', shareUuid = '7c9c696bdd2140e0959fd83d6fbae69e'
+const ACT_ID = 'dz2010100034444201', shareUuid = '28a699ac78d74aa3b31f7103597f8927'
 let ADD_CART = false
 ADD_CART = $.isNode() ? (process.env.PURCHASE_SHOPS ? process.env.PURCHASE_SHOPS : ADD_CART) : ($.getdata("ADD_CART") ? $.getdata("ADD_CART") : ADD_CART);
 // 加入购物车开关，与东东小窝共享
 
-let inviteCodes = [
- 'f5e7d8ca8664449ab0828fae8a481d6d@7c9c696bdd2140e0959fd83d6fbae69e@6522e60f38de45fb83c982acd866dcf6@ad1810abcced49faaf6f98c5b1898fb9@94514ed63c1546afb68e4798c6925e3e@591f04167afb4c95ad7e97c82bd3f3a6@6329bfc583ef47cc8138ea042a82265f@c1528406464947a2a1c98936bcfd7152',
- 'f5e7d8ca8664449ab0828fae8a481d6d@7c9c696bdd2140e0959fd83d6fbae69e@6522e60f38de45fb83c982acd866dcf6@ad1810abcced49faaf6f98c5b1898fb9@94514ed63c1546afb68e4798c6925e3e@591f04167afb4c95ad7e97c82bd3f3a6@6329bfc583ef47cc8138ea042a82265f@c1528406464947a2a1c98936bcfd7152',
+let inviteCodes = [	
+  'c68bf26e0a9e4e73b610b9902448bea6@61dc4400fcba4b38893ea88dcf7ee6a4@ed769bec4e514a34a026e22b5deb1937@c993d26b0dd94ca0a68b910fbf281e5d',	
+  'c68bf26e0a9e4e73b610b9902448bea6@61dc4400fcba4b38893ea88dcf7ee6a4@ed769bec4e514a34a026e22b5deb1937@c993d26b0dd94ca0a68b910fbf281e5d'	
 ]
 
 if ($.isNode()) {
